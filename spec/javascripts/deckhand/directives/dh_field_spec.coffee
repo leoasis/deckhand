@@ -33,13 +33,15 @@ describe 'dhField directive', ->
       thumbnailProp: 'http://some.url/to/an/image.png'
       linkToProp: 'chimichangas'
 
-  describe 'when the field has no special properties', ->
-    beforeEach inject ($compile, $rootScope) ->
-      html = '''
-        <dh-field item="item" model="'Model'" name="'prop'"/>
-      '''
+  withHtml = (html) ->
+    inject ($compile) ->
       el = $compile(html)(outerScope)
       outerScope.$apply()
+
+  describe 'when the field has no special properties', ->
+    beforeEach withHtml '''
+      <dh-field item="item" model="'Model'" name="'prop'"/>
+    '''
 
     it 'renders the value', ->
       expect(el).toHaveText(item.prop)
@@ -47,14 +49,13 @@ describe 'dhField directive', ->
   describe 'when the field is of type = relation', ->
     Cards = null
 
-    beforeEach inject ($compile, $rootScope, _Cards_) ->
+    beforeEach inject (_Cards_) ->
       Cards = _Cards_
       spyOn(Cards, 'show')
-      html = '''
-        <dh-field item="item" model="'Model'" name="'relationProp'"/>
-      '''
-      el = $compile(html)(outerScope)
-      outerScope.$apply()
+
+    beforeEach withHtml '''
+      <dh-field item="item" model="'Model'" name="'relationProp'"/>
+    '''
 
     it 'renders a link', ->
       expect(el.find('a')).toExist()
@@ -70,24 +71,17 @@ describe 'dhField directive', ->
         expect(Cards.show).toHaveBeenCalledWith(item.relationProp._model, item.relationProp.id)
 
   describe 'when the field is of type = time', ->
-    beforeEach inject ($compile, $rootScope) ->
-      html = '''
-        <dh-field item="item" model="'Model'" name="'timeProp'"/>
-      '''
-      el = $compile(html)(outerScope)
-      outerScope.$apply()
+    beforeEach withHtml '''
+      <dh-field item="item" model="'Model'" name="'timeProp'"/>
+    '''
 
     it 'renders a span with the short time', ->
       expect(el).toHaveText('a few seconds ago')
 
-
   describe 'when the field is a thumbnail', ->
-    beforeEach inject ($compile, $rootScope) ->
-      html = '''
-        <dh-field item="item" model="'Model'" name="'thumbnailProp'"/>
-      '''
-      el = $compile(html)(outerScope)
-      outerScope.$apply()
+    beforeEach withHtml '''
+      <dh-field item="item" model="'Model'" name="'thumbnailProp'"/>
+    '''
 
     it 'renders an external link to the prop value', ->
       expect(el.find('a')).toHaveAttr('href', item.thumbnailProp)
@@ -97,12 +91,9 @@ describe 'dhField directive', ->
       expect(el.find('a img')).toHaveAttr('src', item.thumbnailProp)
 
   describe 'when the field is an external link', ->
-    beforeEach inject ($compile, $rootScope) ->
-      html = '''
-        <dh-field item="item" model="'Model'" name="'linkToProp'"/>
-      '''
-      el = $compile(html)(outerScope)
-      outerScope.$apply()
+    beforeEach withHtml '''
+      <dh-field item="item" model="'Model'" name="'linkToProp'"/>
+    '''
 
     it 'renders an external link to the prop value', ->
       href = modelConfigData.Model.linkToProp.link_to.replace(':value', item.linkToProp)
