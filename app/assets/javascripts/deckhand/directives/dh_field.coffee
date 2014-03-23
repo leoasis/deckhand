@@ -49,7 +49,7 @@ Deckhand.app.directive 'dhField', [
         output = "<div ng-bind-html=\"#{value}\"></div>"
 
       else if field.thumbnail
-        output = "<a target='_blank' ng-href=\"#{value}\"><img ng-src=\"#{value}\"</a>"
+        output = "<a target='_blank' ng-href=\"#{value}\"><img ng-src=\"#{value}\" /></a>"
 
       else if field.link_to
         output = "<a target='_blank' ng-href=\"{{substitute(item, name, '#{field.link_to}')}}\">

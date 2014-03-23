@@ -1,17 +1,23 @@
 require '../../spec_helper'
 
 describe 'dhField directive', ->
-  el = outerScope = item = null
+  el = outerScope = item = modelConfigData = null
 
   beforeEach angular.mock.module 'Deckhand'
 
   beforeEach angular.mock.module ($provide) ->
-    $provide.value 'ModelConfigData',
+    modelConfigData =
       'Model':
         relationProp:
           type: 'relation'
         timeProp:
           type: 'time'
+        thumbnailProp:
+          thumbnail: true
+        linkToProp:
+          link_to: 'http://some.url/that/has/the/:value'
+
+    $provide.value 'ModelConfigData', modelConfigData
     undefined
 
   beforeEach inject ($rootScope) ->
@@ -24,6 +30,8 @@ describe 'dhField directive', ->
         _model: 'AnotherModel'
         id: 123
         _label: 'Some prop description'
+      thumbnailProp: 'http://some.url/to/an/image.png'
+      linkToProp: 'chimichangas'
 
   describe 'when the field has no special properties', ->
     beforeEach inject ($compile, $rootScope) ->
@@ -71,3 +79,32 @@ describe 'dhField directive', ->
 
     it 'renders a span with the short time', ->
       expect(el).toHaveText('a few seconds ago')
+
+
+  describe 'when the field is a thumbnail', ->
+    beforeEach inject ($compile, $rootScope) ->
+      html = '''
+        <dh-field item="item" model="'Model'" name="'thumbnailProp'"/>
+      '''
+      el = $compile(html)(outerScope)
+      outerScope.$apply()
+
+    it 'renders an external link to the prop value', ->
+      expect(el.find('a')).toHaveAttr('href', item.thumbnailProp)
+      expect(el.find('a')).toHaveAttr('target', '_blank')
+
+    it 'renders an image inside the link with the value as src', ->
+      expect(el.find('a img')).toHaveAttr('src', item.thumbnailProp)
+
+  describe 'when the field is an external link', ->
+    beforeEach inject ($compile, $rootScope) ->
+      html = '''
+        <dh-field item="item" model="'Model'" name="'linkToProp'"/>
+      '''
+      el = $compile(html)(outerScope)
+      outerScope.$apply()
+
+    it 'renders an external link to the prop value', ->
+      href = modelConfigData.Model.linkToProp.link_to.replace(':value', item.linkToProp)
+      expect(el.find('a')).toHaveAttr('href', href)
+      expect(el.find('a')).toHaveAttr('target', '_blank')
