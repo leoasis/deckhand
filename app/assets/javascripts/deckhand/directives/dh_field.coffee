@@ -3,9 +3,7 @@ Deckhand.app.directive 'dhField', [
   ($compile, FieldFormatter, $rootScope, ModelConfig, Cards, ModalEditor) ->
 
     link = (scope, element, attrs) ->
-
       element.html(getTemplate(scope))
-
       $compile(element.contents())(scope)
 
       scope.format = FieldFormatter.format
